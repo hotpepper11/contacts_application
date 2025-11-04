@@ -1,4 +1,4 @@
-defmodule ContactsApplication.Contact do
+defmodule ContactsApplication.Contacts.Contact do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,17 +7,14 @@ defmodule ContactsApplication.Contact do
     field :phone, :string
     field :email, :string
     field :notes, :string
-    timestamps()
+
+    timestamps(type: :utc_datetime)
   end
 
-  @doc """
-  Generates a changeset for contact creation and updates.
-  """
+  @doc false
   def changeset(contact, attrs) do
     contact
     |> cast(attrs, [:name, :phone, :email, :notes])
-    |> validate_required([:name, :email])
-    |> unique_constraint(:email)
-    |> validate_format(:email, ~r/@/)
+    |> validate_required([:name, :phone, :email, :notes])
   end
 end

@@ -1,8 +1,8 @@
-defmodule ContactsManager.Release do
+defmodule ContactsApplication.Release do
   @moduledoc """
   Handles tasks specific to the application release, primarily Ecto migrations.
   """
-  alias ContactsManager.Repo
+  alias ContactsApplication.Repo
 
   def migrate do
     # 1. Start the Ecto application/supervision tree temporarily

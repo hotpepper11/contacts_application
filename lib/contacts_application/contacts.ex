@@ -1,11 +1,11 @@
-defmodule ContactsManager.Contacts do
+defmodule ContactsApplication.Contacts do
   @moduledoc """
   The Contacts context module, handling all business logic
   related to Contact records.
   """
   import Ecto.Query, warn: false
-  alias ContactsManager.Repo
-  alias ContactsManager.Contact
+  alias ContactsApplication.Repo
+  alias ContactsApplication.Contact
 
   # --- Read Operations ---
 
@@ -15,9 +15,7 @@ defmodule ContactsManager.Contacts do
   end
 
   @doc "Gets a single contact by ID. Raises if not found."
-  def get_contact!(id) do
-    Repo.get!(Contact, id)
-  end
+  def get_contact!(id), do: Repo.get!(Contact, id)
 
   # --- Write Operations (CRUD) ---
 
