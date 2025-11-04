@@ -1,16 +1,18 @@
 defmodule ContactsApplicationWeb.ContactLive.Index do
-  # NOTE: The module name MUST match your core application name: ContactsApplication
   use ContactsApplicationWeb, :live_view
+  use Phoenix.LiveView
 
-  # Correct Context Alias: Context lives in the core app, NOT the Web app.
+
   alias ContactsApplication.Contacts
   alias ContactsApplication.Contact
 
   @impl true
   def mount(_params, _session, socket) do
-    # FIX: Initialize :contacts as a stream. This is required for stream_insert/delete
-    # and the rendering helpers used in the HTML template.
-    socket = stream(socket, :contacts, Contacts.list_contacts())
+    contacts = Contacts.list_contacts()
+    socket = assign(socket, :contacts, contacts)
+    socket = stream(socket, :contacts, contacts)
+
+    {:ok, socket}
     {:ok, socket}
   end
 

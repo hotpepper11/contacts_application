@@ -1,6 +1,9 @@
 defmodule ContactsApplicationWeb.Router do
   use ContactsApplicationWeb, :router
 
+  # Import the LiveView routing helpers so we can use `live "/", ...`
+  import Phoenix.LiveView.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -17,10 +20,9 @@ defmodule ContactsApplicationWeb.Router do
   scope "/", ContactsApplicationWeb do
     pipe_through [:browser]
 
-    live "/contacts", ContactLive.Index, :render
-    live "/contacts/new", ContactLive.Index, :new
-    live "/contacts/:id/edit", ContactLive.Index, :edit
-    live "/contacts/:id", ContactLive.Show, :show
+    live "/", ContactLive.Index, :index
+
+    # resources "/contacts", ContactsController
   end
 
   # Other scopes may use custom stacks.
