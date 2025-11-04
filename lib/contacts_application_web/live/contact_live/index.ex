@@ -59,11 +59,8 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
   end
 
   @impl true
-  def handle_event("create_contact", _params, socket) do
-    # Attributes for the new record
-    attrs = %{name: "New Item (Default)", email: "test@example.com", phone: "asd", notes: "df", title: "New"}
-
-    case Contacts.create_contact(attrs) do
+  def handle_event("create_contact", params, socket) do
+    case Contacts.create_contact(params["contact"]) do
       {:ok, new_contact} ->
         socket = put_flash(socket, :info, "Contact successfully created!")
 
@@ -76,8 +73,6 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
         {:noreply, put_flash(socket, :error, "Failed to create contact. Check logs for validation errors.")}
     end
   end
-
-
 
   @impl true
   # Ensures the saved contact is efficiently streamed onto the list
