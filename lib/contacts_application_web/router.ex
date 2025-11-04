@@ -22,7 +22,9 @@ defmodule ContactsApplicationWeb.Router do
 
     live "/", ContactLive.Index, :index
 
-    # resources "/contacts", ContactsController
+    live "/contacts/new", ContactLive.Index, :new
+    live "/contacts/:id/edit", ContactLive.Index, :edit
+    live "/contacts/:id", ContactLive.Show, :show
   end
 
   # Other scopes may use custom stacks.

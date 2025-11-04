@@ -2,7 +2,6 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
   use ContactsApplicationWeb, :live_view
   use Phoenix.LiveView
 
-
   alias ContactsApplication.Contacts
   alias ContactsApplication.Contact
 
@@ -58,6 +57,27 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
     # Use stream_delete to update the list efficiently on the client side
     {:noreply, stream_delete(socket, :contacts, contact)}
   end
+
+  @impl true
+  def handle_event("create_contact", _params, socket) do
+    # Attributes for the new record
+    attrs = %{name: "New Item (Default)", email: "test@example.com", phone: "asd", notes: "df", title: "New"}
+
+    case Contacts.create_contact(attrs) do
+      {:ok, new_contact} ->
+        socket = put_flash(socket, :info, "Contact successfully created!")
+
+        socket = LiveStream.insert(socket, :contacts, new_contact)
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        IO.inspect(changeset.errors, label: "Contact Creation Failed")
+        {:noreply, put_flash(socket, :error, "Failed to create contact. Check logs for validation errors.")}
+    end
+  end
+
+
 
   @impl true
   # Ensures the saved contact is efficiently streamed onto the list

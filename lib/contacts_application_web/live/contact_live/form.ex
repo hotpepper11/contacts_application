@@ -92,6 +92,6 @@ defmodule ContactsApplicationWeb.ContactLive.Form do
     end
   end
 
-  defp return_path("index", _contact), do: ~p"/contacts"
+  defp return_path("index", _contact), do: ~p"/"
   defp return_path("show", contact), do: ~p"/contacts/#{contact}"
 end

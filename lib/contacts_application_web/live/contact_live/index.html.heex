@@ -1,20 +1,5 @@
 <div class="container mx-auto p-4">
-  <h1 class="text-3xl font-extrabold text-gray-900 mb-6">Contacts Manager</h1>
-
-  <%= if @live_action in [:new, :edit] do %>
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-40">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <.live_component
-          module={ContactsApplicationWeb.ContactLive.FormComponent}
-          id={:new}
-          title={@page_title}
-          action={@live_action}
-          contact={@contact}
-          return_to={~p"/contacts"}
-        />
-      </div>
-    </div>
-  <% end %>
+  <h1 class="text-3xl font-extrabold text-white mb-6">Contacts Manager</h1>
 
   <div class="flex justify-between items-center mb-6">
     <.link navigate={~p"/contacts/new"}
@@ -48,13 +33,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <.link navigate={~p"/contacts/#{contact}/edit"} class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</.link>
               <a href="#" phx-click={JS.dispatch("click", to: "#delete-confirm-#{contact.id}")} class="text-red-600 hover:text-red-900">Delete</a>
-
-              <.live_component
-                module={ContactsApplicationWeb.ContactLive.FormComponent}
-                id={"delete-confirm-#{contact.id}"}
-                contact={contact}
-                action={:delete}
-              />
             </td>
           </tr>
         <% end %>
@@ -64,4 +42,19 @@
       </tbody>
     </table>
   </div>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <div class="fixed inset-0 overflow-y-auto h-full w-full z-100" style="background-color: rgba(0, 0, 0, 0.5);">
+      <div class="relative top-40 mx-auto p-5 border w-150 shadow-lg rounded-md color-black bg-white text-black">
+        <.live_component
+          module={ContactsApplicationWeb.ContactLive.FormComponent}
+          id={:new}
+          title={@page_title}
+          action={@live_action}
+          contact={@contact}
+          return_to={~p"/"}
+        />
+      </div>
+    </div>
+  <% end %>
 </div>
