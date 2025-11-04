@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ecto-migrate-{{ .Release.Name }}-{{ .RunID }}
+  labels:
+    app.kubernetes.io/name: your-app-migrate
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migrate
+        image: your_registry/your_app:latest
+        command: ["/app/bin/your_app", "eval", "YourApp.Release.migrate"]
+        env:
+        - name: DATABASE_URL
+          value: "ecto://postgres_user:secure_password@postgres-service/your_app_db"
