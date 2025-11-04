@@ -75,6 +75,34 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
   end
 
   @impl true
+  def handle_event("update_contact", params, socket) do
+    case Contacts.update_contact(Contacts.get_contact!(params["id"]), params["contact"]) do
+      {:ok, new_contact} ->
+        socket = put_flash(socket, :info, "Contact successfully updated!")
+
+        {:noreply, redirect(socket, to: ~p"/")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        IO.inspect(changeset.errors, label: "Contact Creation Failed")
+        {:noreply, put_flash(socket, :error, "Failed to create contact. Check logs for validation errors.")}
+    end
+  end
+
+  @impl true
+  def handle_event("delete_contact", params, socket) do
+    case Contacts.delete_contact(Contacts.get_contact!(params["id"])) do
+      {:ok, new_contact} ->
+        socket = put_flash(socket, :info, "Contact successfully deleted!")
+
+        {:noreply, redirect(socket, to: ~p"/")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        IO.inspect(changeset.errors, label: "Contact Creation Failed")
+        {:noreply, put_flash(socket, :error, "Failed to create contact. Check logs for validation errors.")}
+    end
+  end
+
+  @impl true
   # Ensures the saved contact is efficiently streamed onto the list
   def handle_info({ContactsApplicationWeb.ContactLive.FormComponent, {:saved, contact}}, socket) do
     {:noreply, stream_insert(socket, :contacts, contact)}

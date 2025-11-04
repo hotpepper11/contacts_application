@@ -1,7 +1,9 @@
 <div>
   <h2><%= @title %></h2>
 
-  <form id="contact-form" phx-submit="create_contact">
+  <form id="contact-form" phx-submit={@submit_action}>
+    <input name="id" value={@changeset.data.id} style="display: none;" />
+
     <div class="mb-4">
       <input type="text" name="contact[name]" placeholder="Name" value={@changeset.data.name} class="w-full px-3 py-2 border rounded" />
     </div>
@@ -15,7 +17,7 @@
     </div>
 
     <div class="mb-4">
-      <textarea name="contact[notes]" placeholder="Notes (optional)" value={@changeset.data.notes} class="w-full px-3 py-2 border rounded" />
+      <textarea name="contact[notes]" placeholder="Notes (optional)" class="w-full px-3 py-2 border rounded">{@changeset.data.notes}</textarea>
     </div>
 
     <div class="flex justify-end space-x-2 mt-6">
