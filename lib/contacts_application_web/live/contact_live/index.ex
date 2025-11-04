@@ -1,55 +1,51 @@
 defmodule ContactsApplicationWeb.ContactLive.Index do
+  # NOTE: The module name MUST match your core application name: ContactsApplication
   use ContactsApplicationWeb, :live_view
 
+  # Correct Context Alias: Context lives in the core app, NOT the Web app.
   alias ContactsApplication.Contacts
-
-  @impl true
-  def render(assigns) do
-    ~H"""
-    <Layouts.app flash={@flash}>
-      <.header>
-        Listing Contacts
-        <:actions>
-          <.button variant="primary" navigate={~p"/contacts/new"}>
-            <.icon name="hero-plus" /> New Contact
-          </.button>
-        </:actions>
-      </.header>
-
-      <.table
-        id="contacts"
-        rows={@streams.contacts}
-        row_click={fn {_id, contact} -> JS.navigate(~p"/contacts/#{contact}") end}
-      >
-        <:col :let={{_id, contact}} label="Name">{contact.name}</:col>
-        <:col :let={{_id, contact}} label="Phone">{contact.phone}</:col>
-        <:col :let={{_id, contact}} label="Email">{contact.email}</:col>
-        <:col :let={{_id, contact}} label="Notes">{contact.notes}</:col>
-        <:action :let={{_id, contact}}>
-          <div class="sr-only">
-            <.link navigate={~p"/contacts/#{contact}"}>Show</.link>
-          </div>
-          <.link navigate={~p"/contacts/#{contact}/edit"}>Edit</.link>
-        </:action>
-        <:action :let={{id, contact}}>
-          <.link
-            phx-click={JS.push("delete", value: %{id: contact.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
-        </:action>
-      </.table>
-    </Layouts.app>
-    """
-  end
+  alias ContactsApplication.Contact
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:page_title, "Listing Contacts")
-     |> stream(:contacts, list_contacts())}
+    # FIX: Initialize :contacts as a stream. This is required for stream_insert/delete
+    # and the rendering helpers used in the HTML template.
+    socket = stream(socket, :contacts, Contacts.list_contacts())
+    {:ok, socket}
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  # Handles the root route defined as :index
+  defp apply_action(socket, :index, _params) do
+    socket
+    |> assign(:page_title, "Contacts")
+    |> assign(:contact, nil)
+  end
+
+  # Catch the :render action that LiveView sometimes sends during initial mount
+  defp apply_action(socket, :render, _params) do
+    apply_action(socket, :index, _params)
+  end
+
+  defp apply_action(socket, :new, _params) do
+    changeset = Contacts.change_contact(%Contact{})
+
+    socket
+    |> assign(:page_title, "New Contact")
+    |> assign(:contact, changeset)
+  end
+
+  defp apply_action(socket, :edit, %{"id" => id}) do
+    contact = Contacts.get_contact!(id)
+    changeset = Contacts.change_contact(contact)
+
+    socket
+    |> assign(:page_title, "Edit Contact")
+    |> assign(:contact, changeset)
   end
 
   @impl true
@@ -57,10 +53,13 @@ defmodule ContactsApplicationWeb.ContactLive.Index do
     contact = Contacts.get_contact!(id)
     {:ok, _} = Contacts.delete_contact(contact)
 
+    # Use stream_delete to update the list efficiently on the client side
     {:noreply, stream_delete(socket, :contacts, contact)}
   end
 
-  defp list_contacts() do
-    Contacts.list_contacts()
+  @impl true
+  # Ensures the saved contact is efficiently streamed onto the list
+  def handle_info({ContactsApplicationWeb.ContactLive.FormComponent, {:saved, contact}}, socket) do
+    {:noreply, stream_insert(socket, :contacts, contact)}
   end
 end

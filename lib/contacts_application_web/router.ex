@@ -15,9 +15,12 @@ defmodule ContactsApplicationWeb.Router do
   end
 
   scope "/", ContactsApplicationWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
-    get "/", PageController, :home
+    live "/contacts", ContactLive.Index, :render
+    live "/contacts/new", ContactLive.Index, :new
+    live "/contacts/:id/edit", ContactLive.Index, :edit
+    live "/contacts/:id", ContactLive.Show, :show
   end
 
   # Other scopes may use custom stacks.
