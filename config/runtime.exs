@@ -55,6 +55,12 @@ if config_env() == :prod do
 
   config :contacts_application, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  # Configure the ContactsManager.Repo based on environment variables
+  config :contacts_manager, ContactsManager.Repo,
+    # DATABASE_URL will be set by Kubernetes
+    url: System.get_env("DATABASE_URL") || "ecto://user:securepassword@localhost/contacts_db",
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+
   config :contacts_application, ContactsApplicationWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
